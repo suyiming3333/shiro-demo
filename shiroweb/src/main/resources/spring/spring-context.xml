@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 
     <import resource="spring-dao.xml"/>
+    <import resource="spring-jedis.xml"/>
+
+    <context:component-scan base-package="com.sym.shiroweb.session;com.sym.shiroweb.utils"/>
 
     <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
         <property name="securityManager" ref="securityManager"/>
@@ -30,6 +34,7 @@
 
     <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
         <property name="realm" ref="realm"/>
+        <property name="sessionManager" ref="sessionManager"/>
     </bean>
 
     <bean id="realm" class="com.sym.shiroweb.realm.CustomRealm">
@@ -40,4 +45,13 @@
         <property name="hashAlgorithmName" value="md5"/>
         <property name="hashIterations" value="1"/>
     </bean>
+
+    <!-- 配置session管理器-->
+    <!--<bean id="sessionManager" class="com.sym.shiroweb.session.CustomSessionManager">-->
+        <!--<property name="sessionDAO" ref="redisSessionDao"/>-->
+    <!--</bean>-->
+    <bean id="sessionManager" class="org.apache.shiro.session.mgt.DefaultSessionManager">
+        <property name="sessionDAO" ref="redisSessionDao"/>
+    </bean>
+    <bean id="redisSessionDao" class="com.sym.shiroweb.session.RedisSessionDao"/>
 </beans>
